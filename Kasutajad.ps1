@@ -5,7 +5,7 @@ $csvFail = "C:\tee\kasutajad.csv"
 $domainDN = (Get-ADDomain).DistinguishedName
 
 # Laeb CSV sisu
-$kasutajad = Import-Csv -Path $csvFail -Delimiter ','  # Vajadusel muuda ; kui CSVs on semikoolon
+$kasutajad = Import-Csv -Path $csvFail -Delimiter ';'  # Vajadusel muuda ; kui CSVs on semikoolon
 
 foreach ($rida in $kasutajad) {
     # Lahuta ees- ja perenimi (toetab mitmiksõnalisi nimesid)
@@ -32,7 +32,7 @@ foreach ($rida in $kasutajad) {
             -Surname $perenimi `
             -SamAccountName $kasutajanimi `
             -UserPrincipalName "$kasutajanimi@$(Get-ADDomain).DNSRoot" `
-            -AccountPassword (ConvertTo-SecureString "passw0rd" -AsPlainText -Force) `
+            -AccountPassword (ConvertTo-SecureString "TurvalineEsmaneParool1!" -AsPlainText -Force) `
             -Enabled $true `
             -ChangePasswordAtLogon $true `
             -Path $ouPath
