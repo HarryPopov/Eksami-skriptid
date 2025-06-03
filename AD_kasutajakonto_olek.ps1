@@ -1,21 +1,26 @@
-# Impordi Active Directory moodul
+# Impordi Active Directory moodul.
 Import-Module ActiveDirectory
 
-# Loo sihtkaust, kui see puudub
+# Kui puudub siis loo kaust aruannete salvestamiseks.
 $folderPath = "C:\AD_Raport"
 if (!(Test-Path -Path $folderPath)) {
     New-Item -ItemType Directory -Path $folderPath | Out-Null
 }
 
-# Hankige kõik kasutajad koos vajalike omadustega
+# Hankige kõik AD kasutajad koos vajalike parameetritega.
 $allUsers = Get-ADUser -Filter * -Properties LastLogonDate, Enabled, LockedOut
 
-# Filtreeri kategooriad
+# Filtreeri kasutajad kolme kategooriasse.
+# 1. Pole kunagi sisse loginud
 $neverLoggedIn = $allUsers | Where-Object { -not $_.LastLogonDate }
+
+# 2. Keelatud kasutajakontod.
 $disabledAccounts = $allUsers | Where-Object { $_.Enabled -eq $false }
+
+# 3. Lukustatud kontod.
 $lockedAccounts = $allUsers | Where-Object { $_.LockedOut -eq $true }
 
-# Salvesta .csv-failidesse
+# Salvesta tulemused CSV-Failidesse.
 $neverLoggedIn | Select-Object Name, SamAccountName, Enabled, LastLogonDate |
     Export-Csv -Path "$folderPath\NeverLoggedInUsers.csv" -NoTypeInformation -Encoding UTF8
 
@@ -25,5 +30,5 @@ $disabledAccounts | Select-Object Name, SamAccountName, Enabled, LastLogonDate |
 $lockedAccounts | Select-Object Name, SamAccountName, Enabled, LockedOut, LastLogonDate |
     Export-Csv -Path "$folderPath\LockedAccounts.csv" -NoTypeInformation -Encoding UTF8
 
-# Lõpuks info
-Write-Host "`nCSV failid salvestati kausta: $folderPath" -ForegroundColor Green
+# Kuva teade kui failid on salvestatud.
+Write-Host "`CSV failid salvestati kausta: $folderPath"
