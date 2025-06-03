@@ -1,0 +1,14 @@
+# Installib DHCP teenuse koos haldustööriistadega.
+nstall-WindowsFeature -Name DHCP -IncludeManagementTools
+# Loob DHCP serveri seob ta domeeniga ning annab IP aadressi
+Add-DhcpServerInDC -DnsName DC1.oige.local -IPAddress 10.0.23.2
+# Seadistab seadmetele jagatavad vajalikud aadressid ja domeeninime.
+Set-DhcpServerv4OptionValue -ComputerName DC1.oige.local -DnsServer 10.0.23.2 -WinsServer 10.0.23.2 -DnsDomain oige.local
+# Loob uue võrguaadresside vahemiku mida klientidele jagada.
+Add-DhcpServerv4Scope -EndRange 10.0.23.120 -Name AADRESSID -StartRange 10.0.23.100 -SubnetMask 255.255.255.0 -LeaseDuration ([TimeSpan]::FromHours(4))
+# Määrab DNS aadressid
+Set-DhcpServerv4OptionValue -ScopeId 10.0.23.0 -DnsServer 10.0.23.2,10.0.23.3 -DnsDomain oige.local
+# Määrab DHCP serverile gateway.
+Set-DhcpServerv4OptionValue -Router 10.0.23.1
+# Taaskäivitab teenuse.
+Restart-Service dhcpserverv
