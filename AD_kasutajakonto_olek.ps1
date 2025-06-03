@@ -2,7 +2,7 @@
 Import-Module ActiveDirectory
 
 # Kui puudub siis loo kaust aruannete salvestamiseks.
-$folderPath = "C:\AD_Raport"
+$folderPath = "C:\RAPORTID\AD_RAPORTID"
 if (!(Test-Path -Path $folderPath)) {
     New-Item -ItemType Directory -Path $folderPath | Out-Null
 }
